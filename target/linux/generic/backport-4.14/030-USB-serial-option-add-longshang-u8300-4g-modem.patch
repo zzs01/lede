@@ -1,0 +1,17 @@
+--- a/drivers/usb/serial/option.c 2020-04-13 16:34:39.000000000 +0800
++++ b/drivers/usb/serial/option.c 2020-04-22 09:21:27.983839000 +0800
+@@ -384,6 +384,7 @@ static void option_instat_callback(struc
+  * Mobidata, etc sell under their own brand names.
+  */
+ #define LONGCHEER_VENDOR_ID			0x1c9e
++#define LONGCHEER_U8300_PRODUCT_ID		0x9b05
+ 
+ /* 4G Systems products */
+ /* This is the 4G XS Stick W14 a.k.a. Mobilcom Debitel Surf-Stick *
+@@ -1844,6 +1845,7 @@ static const struct usb_device_id option
+ 	  .driver_info = RSVD(4) },
+ 	{ USB_DEVICE(LONGCHEER_VENDOR_ID, ZOOM_PRODUCT_4597) },
+ 	{ USB_DEVICE(LONGCHEER_VENDOR_ID, IBALL_3_5G_CONNECT) },
++	{ USB_DEVICE(LONGCHEER_VENDOR_ID, LONGCHEER_U8300_PRODUCT_ID) },
+ 	{ USB_DEVICE(HAIER_VENDOR_ID, HAIER_PRODUCT_CE100) },
+ 	{ USB_DEVICE_AND_INTERFACE_INFO(HAIER_VENDOR_ID, HAIER_PRODUCT_CE81B, 0xff, 0xff, 0xff) },

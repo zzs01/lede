@@ -1,0 +1,10 @@
++++ a/drivers/net/usb/qmi_wwan.c	2020-04-13 16:34:39.000000000 +0800
++++ b/drivers/net/usb/qmi_wwan.c	2020-04-22 10:36:16.111337800 +0800
+@@ -998,6 +998,7 @@ static const struct usb_device_id produc
+ 	{QMI_MATCH_FF_FF_FF(0x2c7c, 0x0800)},	/* Quectel RM500Q-GL */
+ 
+ 	/* 3. Combined interface devices matching on interface number */
++	{QMI_FIXED_INTF(0x1c9e, 0x9b05, 4)}, 	/* Longshang u8300*/
+ 	{QMI_FIXED_INTF(0x0408, 0xea42, 4)},	/* Yota / Megafon M100-1 */
+ 	{QMI_FIXED_INTF(0x05c6, 0x6001, 3)},	/* 4G LTE usb-modem U901 */
+ 	{QMI_FIXED_INTF(0x05c6, 0x7000, 0)},
