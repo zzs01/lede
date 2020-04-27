@@ -29,7 +29,6 @@
 +      ReadSync
 +      WriteSyncCallback
 +      WriteSync
-+
 +   Internal memory management functions
 +      GetClientID
 +      ReleaseClientID
@@ -96,6 +95,7 @@
 +#include <asm/unaligned.h>
 +#include "QMIDevice.h"
 +#include <linux/module.h>
++#include <linux/sched/signal.h>
 +
 +//-----------------------------------------------------------------------------
 +// Definitions
