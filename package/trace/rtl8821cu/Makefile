@@ -1,6 +1,6 @@
 ################################################################################
 #
-# 8821 is the Linux device driver released for Realtek 2.5Gigabit Ethernet
+# 8821cu is the Linux device driver released for Realtek 2.5Gigabit Ethernet
 # controllers with PCI-Express interface.
 #
 # Copyright(c) 2018 Realtek Semiconductor Corp. All rights reserved.
@@ -58,36 +58,38 @@
 
 # Attribution: https://gist.github.com/lenew/9b41ba901c3393047ede0766760f9d55
 
-#Put this source to 'package/kernel/8821' folder of OpenWRT/LEDE SDK
+#Put this source to 'package/kernel/8821cu' folder of OpenWRT/LEDE SDK
 #Build(make menuconfig, make defconfig, make)
 
 include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/kernel.mk
 
-PKG_NAME:=rtl8821
+PKG_NAME:=8821cu
 PKG_VERSION:=1.0
 PKG_RELEASE:=1
 
-#PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.bz2
-#PKG_CAT:=bzcat
-
-PKG_BUILD_DIR:=$(KERNEL_BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
+PKG_SOURCE_URL:=https://github.com/axiomware/RTL8821CU_driver_v5.8.1
+PKG_SOURCE_PROTO:=git
+PKG_SOURCE_DATE:=2020-01-12
+PKG_SOURCE_VERSION:=978fa97543cd0b2cc32e7e8e075f4e92af632554
 
 include $(INCLUDE_DIR)/package.mk
 
-define KernelPackage/8821
+define KernelPackage/8821cu
   TITLE:=Driver for Realtek rtl8811cu/8821cu chipsets
   SUBMENU:=Network Devices
   VERSION:=$(LINUX_VERSION)+$(PKG_VERSION)-$(BOARD)-$(PKG_RELEASE)
-  FILES:= $(PKG_BUILD_DIR)/8821.ko
-  AUTOLOAD:=$(call AutoProbe,8821)
+  FILES:= $(PKG_BUILD_DIR)/8821cu.ko
+  AUTOLOAD:=$(call AutoProbe,8821cu)
 endef
 
-define Package/8821/description
- This package contains a driver for Realtek 8821 chipsets.
+define Package/8821cucu/description
+ This package contains a driver for Realtek 8821cu chipsets.
 endef
 
-8821_MAKEOPTS= -C $(PKG_BUILD_DIR) \
+8821cu_MAKEOPTS= -C $(LINUX_DIR) \
+		$(KERNEL_MAKE_FLAGS) \
+		M="$(PKG_BUILD_DIR)" \
 		PATH="$(TARGET_PATH)" \
 		ARCH="$(LINUX_KARCH)" \
 		CROSS_COMPILE="$(TARGET_CROSS)" \
@@ -99,13 +101,8 @@ endef
 		LDOPTS=" " \
 		DOMULTI=1
 
-define Build/Prepare
-	mkdir -p $(PKG_BUILD_DIR)
-	$(CP) ./src/* $(PKG_BUILD_DIR)
-endef
-
 define Build/Compile
-	$(MAKE) $(8821_MAKEOPTS) modules
+	$(MAKE) $(8821cu_MAKEOPTS) modules
 endef
 
-$(eval $(call KernelPackage,8821))
+$(eval $(call KernelPackage,8821cu))
