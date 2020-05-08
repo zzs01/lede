@@ -64,7 +64,7 @@
 
 	i2s {
 		ralink,group = "i2s";
-		ralink,function = "gpio";
+		ralink,function = "i2s";
 	};
 
 	spis {
