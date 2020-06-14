@@ -1,0 +1,62 @@
+--- a/drivers/usb/serial/usb_wwan.c 2020-04-13 16:34:39.000000000 +0800
++++ b/drivers/usb/serial/usb_wwan.c 2020-04-26 19:14:20.138843200 +0800
+@@ -140,6 +140,9 @@ static int get_serial_info(struct usb_se
+ {
+ 	struct serial_struct tmp;
+ 
++	if (!retinfo)
++		return -EFAULT;
++
+ 	memset(&tmp, 0, sizeof(tmp));
+ 	tmp.line            = port->minor;
+ 	tmp.port            = port->port_number;
+@@ -461,7 +464,7 @@ void usb_wwan_close(struct usb_serial_po
+ 
+ 	/*
+ 	 * Need to take susp_lock to make sure port is not already being
+-	 * resumed, but no need to hold it due to initialized
++	 * resumed, but no need to hold it due to ASYNC_INITIALIZED.
+ 	 */
+ 	spin_lock_irq(&intfdata->susp_lock);
+ 	if (--intfdata->open_ports == 0)
+@@ -492,7 +495,6 @@ static struct urb *usb_wwan_setup_urb(st
+ 				      void (*callback) (struct urb *))
+ {
+ 	struct usb_serial *serial = port->serial;
+-	struct usb_wwan_intf_private *intfdata = usb_get_serial_data(serial);
+ 	struct urb *urb;
+ 
+ 	urb = usb_alloc_urb(0, GFP_KERNEL);	/* No ISO */
+@@ -502,10 +504,19 @@ static struct urb *usb_wwan_setup_urb(st
+ 	usb_fill_bulk_urb(urb, serial->dev,
+ 			  usb_sndbulkpipe(serial->dev, endpoint) | dir,
+ 			  buf, len, callback, ctx);
+-
+-	if (intfdata->use_zlp && dir == USB_DIR_OUT)
+-		urb->transfer_flags |= URB_ZERO_PACKET;
+-
++	#if 1 //Added by Quectel for Zero Packet
++	if (dir == USB_DIR_OUT) {
++		struct usb_device_descriptor *desc = &serial->dev->descriptor;
++		if (desc->idVendor == cpu_to_le16(0x05C6) && desc->idProduct == cpu_to_le16(0x9090))
++			urb->transfer_flags |= URB_ZERO_PACKET;
++		if (desc->idVendor == cpu_to_le16(0x05C6) && desc->idProduct == cpu_to_le16(0x9003))
++			urb->transfer_flags |= URB_ZERO_PACKET;
++		if (desc->idVendor == cpu_to_le16(0x05C6) && desc->idProduct == cpu_to_le16(0x9215))
++			urb->transfer_flags |= URB_ZERO_PACKET;
++		if (desc->idVendor == cpu_to_le16(0x2C7C))
++			urb->transfer_flags |= URB_ZERO_PACKET;
++	}
++	#endif
+ 	return urb;
+ }
+ 
+@@ -683,7 +694,7 @@ int usb_wwan_resume(struct usb_serial *s
+ 	for (i = 0; i < serial->num_ports; i++) {
+ 		port = serial->port[i];
+ 
+-		if (!tty_port_initialized(&port->port))
++		if (!test_bit(ASYNCB_INITIALIZED, &port->port.flags))
+ 			continue;
+ 
+ 		portdata = usb_get_serial_port_data(port);
